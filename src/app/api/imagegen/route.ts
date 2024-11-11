@@ -1,6 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import 'dotenv/config'
 
+const responseJson = {
+  placeholder: "Hello World",
+}
+const responseJsonError = {
+  placeholder: "Error hit",
+}
+
 const generateImages = async (prompt:string, number=4) => {
   const url = 'https://api.together.xyz/v1/images/generations';
   const options = {
@@ -37,7 +44,7 @@ export async function POST(request: NextRequest) {
       
       // Return JSON array of URLs
       console.log('response',responseJson);
-      return NextResponse.json(responseJson)
+      return NextResponse.json(responseJson);
     }
     else {
       return NextResponse.json(responseJsonError)
