@@ -28,16 +28,20 @@ const generateImages = async (prompt:string, number=4) => {
       // negative_prompt: 'string'
     })
   };
-  const result = await fetch(url, options);
-  const json = result.json();
-  return json;
+  const response = await fetch(url, options);
+  const responseArr = await response.json();
+  console.log(responseArr);
+  const dataArr = responseArr.data;
+  const files = [];
+  dataArr.array.forEach(element => {
+    files.push(element.url);
+  });
+  console.log(files);
+  return files;
+  
 }
 
 const createOrder = async (receiveAddress:string, files) => {
-  /*
-  {filename, dataURL}
-  */
-  const files = [];
   const payload = {
     receiveAddress,
     feeRate: 1,
@@ -53,27 +57,25 @@ const createOrder = async (receiveAddress:string, files) => {
     },
     body: JSON.stringify(payload),
 });
-const data = await response.json();  
+const data = await response.json();
+return data;
 }
 
 export async function POST(request: NextRequest) {
   try {
     // Parse the JSON body from the request
     const body = await request.json();
-    if (body.key==="secretKey") {
+    console.log(body);
       // Generate images
-      const arr = await generateImages(body.prompt, body.num);
+      const filesArr = await generateImages(body.prompt, 2);
+      const order = await createOrder(body.walletDest,filesArr);
       
       // Return JSON array of URLs
       console.log('response',responseJson);
       return NextResponse.json(responseJson);
-    }
-    else {
-      return NextResponse.json(responseJsonError)
-    }
   } catch (error) {
     // If there's an error, return a 400 Bad Request response
-    return NextResponse.json({ error: 'Invalid JSON input' }, { status: 400 })
+    return NextResponse.json({ error }, { status: 400 })
   }
 }
 
