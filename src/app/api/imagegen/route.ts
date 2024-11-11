@@ -17,12 +17,12 @@ const generateImage = async (prompt: string, seed: number) => {
       authorization: 'Bearer ' + process.env.TOGETHER_API_KEY
     },
     body: JSON.stringify({
-      //model: 'black-forest-labs/FLUX.1-schnell-Free',
-      model: 'black-forest-labs/FLUX.1-schnell',
+      model: 'black-forest-labs/FLUX.1-schnell-Free',
+      //model: 'black-forest-labs/FLUX.1-schnell',
       steps: 2,
       n: 1,
-      height: 512,
-      width: 512,
+      height: 1024,
+      width: 1024,
       prompt: prompt, //'cats in geometric patterns on cavas',
       seed: seed,
       // negative_prompt: 'string'
@@ -30,12 +30,12 @@ const generateImage = async (prompt: string, seed: number) => {
   };
   const response = await fetch(url, options);
   const responseArr = await response.json();
-  //console.log(responseArr);
+  console.log(responseArr);
   const dataArr = responseArr.data;
   //console.log( dataArr[0].url);
   return dataArr[0].url;
 }
-const generateImages = async (prompt: string, number = 2) => {
+const generateImages = async (prompt: string, number = 1) => {
   //prompt: cats in geometric patterns on cavas
   const filesList = [];
   const filesObj = []; // {filename, dataURL}
@@ -43,32 +43,45 @@ const generateImages = async (prompt: string, number = 2) => {
     const imageUrl = await generateImage(prompt, i);
     filesList.push(imageUrl);
     filesObj.push({
-      filename: i,
-      dataUrl: imageUrl,
+      filename: "file-" + i,
+      dataURL: imageUrl,
     });
   }
   console.log(filesObj);
   return filesObj;
 }
 
+const getOrders = async () => {
+  const response = await fetch('https://open-api-fractal-testnet.unisat.io/v2/inscribe/order/summary', {
+    method: 'GET',
+    headers: {
+      "Content-Type": "application/json",
+      authorization: 'Bearer ' + process.env.FRACTAL_API_KEY
+    },
+  });
+  const data = await response.json();
+  console.log("fractal response", data);
+}
 const createOrder = async (receiveAddress: string, files: []) => {
   const payload = {
     receiveAddress,
     feeRate: 1,
     outputValue: 546,
     files,
-    devAddress: '2NFWqZc4J27uM3eAqmtBsyiejWQvCA3JMkW',
+    devAddress: '3PxdVs8GQfPzqrYJ6ka1MmfUJ4i2K8tAwY',
     devFee: 1000,
   };
-  const response = await fetch('https://open-api-fractal.unisat.io/v2/inscribe/order/create', {
+  console.log("fractal payload", payload);
+  const response = await fetch('https://open-api-fractal-testnet.unisat.io/v2/inscribe/order/create', {
     method: 'POST',
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
+      authorization: 'Bearer ' + process.env.FRACTAL_API_KEY
     },
     body: JSON.stringify(payload),
   });
   const data = await response.json();
-  console.log(data);
+  console.log("fractal response", data);
   return data;
 }
 
@@ -78,12 +91,13 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     console.log(body);
     // Generate images
-    const filesObj = await generateImages(body.prompt, 2);
+    const filesObj = await generateImages(body.prompt, 1);
     const order = await createOrder(body.walletDest, filesObj);
+    const orderSummary=await getOrders();
+    console.log('orderSummary', orderSummary);
 
     // Return JSON array of URLs
-    console.log('response', order);
-    return NextResponse.json(order);
+    return NextResponse.json(orderSummary);
   } catch (error) {
     // If there's an error, return a 400 Bad Request response
     return NextResponse.json({ error }, { status: 400 })
