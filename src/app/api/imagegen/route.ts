@@ -7,8 +7,7 @@ const responseJson = {
 const responseJsonError = {
   placeholder: "Error hit",
 }
-
-const generateImages = async (prompt: string, number = 4) => {
+const generateImage = async (prompt: string, seed: number) => {
   const url = 'https://api.together.xyz/v1/images/generations';
   const options = {
     method: 'POST',
@@ -18,30 +17,41 @@ const generateImages = async (prompt: string, number = 4) => {
       authorization: 'Bearer ' + process.env.TOGETHER_API_KEY
     },
     body: JSON.stringify({
-      model: 'black-forest-labs/FLUX.1-schnell-Free',
+      //model: 'black-forest-labs/FLUX.1-schnell-Free',
+      model: 'black-forest-labs/FLUX.1-schnell',
       steps: 2,
-      n: number,
+      n: 1,
       height: 512,
       width: 512,
       prompt: prompt, //'cats in geometric patterns on cavas',
-      seed: 2,
+      seed: seed,
       // negative_prompt: 'string'
     })
   };
   const response = await fetch(url, options);
   const responseArr = await response.json();
-  console.log(responseArr);
+  //console.log(responseArr);
   const dataArr = responseArr.data;
-  const files = [];
-  dataArr.array.forEach(element => {
-    files.push(element.url);
-  });
-  console.log(files);
-  return files;
-
+  //console.log( dataArr[0].url);
+  return dataArr[0].url;
+}
+const generateImages = async (prompt: string, number = 2) => {
+  //prompt: cats in geometric patterns on cavas
+  const filesList = [];
+  const filesObj = []; // {filename, dataURL}
+  for (let i = 0; i < number; i++) {
+    const imageUrl = await generateImage(prompt, i);
+    filesList.push(imageUrl);
+    filesObj.push({
+      filename: i,
+      dataUrl: imageUrl,
+    });
+  }
+  console.log(filesObj);
+  return filesObj;
 }
 
-const createOrder = async (receiveAddress: string, files) => {
+const createOrder = async (receiveAddress: string, files: []) => {
   const payload = {
     receiveAddress,
     feeRate: 1,
@@ -58,6 +68,7 @@ const createOrder = async (receiveAddress: string, files) => {
     body: JSON.stringify(payload),
   });
   const data = await response.json();
+  console.log(data);
   return data;
 }
 
@@ -67,12 +78,12 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     console.log(body);
     // Generate images
-    const filesArr = await generateImages(body.prompt, 2);
-    const order = await createOrder(body.walletDest, filesArr);
+    const filesObj = await generateImages(body.prompt, 2);
+    const order = await createOrder(body.walletDest, filesObj);
 
     // Return JSON array of URLs
-    console.log('response', responseJson);
-    return NextResponse.json(responseJson);
+    console.log('response', order);
+    return NextResponse.json(order);
   } catch (error) {
     // If there's an error, return a 400 Bad Request response
     return NextResponse.json({ error }, { status: 400 })
