@@ -10,9 +10,25 @@ export default function Component() {
   const [prompt, setPrompt] = useState("")
   const [walletAddress, setWalletAddress] = useState("")
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const url = '/api/imagegen';
+    const options = {
+      method: 'POST',
+      headers: {
+        accept: 'application/json',
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        prompt,
+        walletDest: walletAddress,
+      })
+    };
+    const result = await fetch(url, options);
+    const resultJson = await result.json();
+  
     console.log("Submitted:", { prompt, walletAddress })
+    console.log("Client Response:", { resultJson })
     // Handle form submission logic here
   }
 
