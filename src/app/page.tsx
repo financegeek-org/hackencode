@@ -20,7 +20,7 @@ export default function Component() {
     <div className="min-h-screen flex items-center justify-center bg-gray-900 p-4">
       <Card className="w-full max-w-md bg-gray-800 text-white">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold text-center">Modern Form</CardTitle>
+          <CardTitle className="text-2xl font-bold text-center">Fractal NFT Generator</CardTitle>
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
@@ -54,7 +54,7 @@ export default function Component() {
               type="submit"
               className="w-full bg-blue-600 hover:bg-blue-700 text-white transition-colors duration-300"
             >
-              Submit
+              Generate
             </Button>
           </CardFooter>
         </form>
