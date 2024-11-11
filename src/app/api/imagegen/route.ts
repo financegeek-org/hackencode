@@ -8,14 +8,14 @@ const responseJsonError = {
   placeholder: "Error hit",
 }
 
-const generateImages = async (prompt:string, number=4) => {
+const generateImages = async (prompt: string, number = 4) => {
   const url = 'https://api.together.xyz/v1/images/generations';
   const options = {
     method: 'POST',
     headers: {
       accept: 'application/json',
       'content-type': 'application/json',
-      authorization: 'Bearer '+ process.env.TOGETHER_API_KEY
+      authorization: 'Bearer ' + process.env.TOGETHER_API_KEY
     },
     body: JSON.stringify({
       model: 'black-forest-labs/FLUX.1-schnell-Free',
@@ -38,10 +38,10 @@ const generateImages = async (prompt:string, number=4) => {
   });
   console.log(files);
   return files;
-  
+
 }
 
-const createOrder = async (receiveAddress:string, files) => {
+const createOrder = async (receiveAddress: string, files) => {
   const payload = {
     receiveAddress,
     feeRate: 1,
@@ -56,9 +56,9 @@ const createOrder = async (receiveAddress:string, files) => {
       "Content-Type": "application/json"
     },
     body: JSON.stringify(payload),
-});
-const data = await response.json();
-return data;
+  });
+  const data = await response.json();
+  return data;
 }
 
 export async function POST(request: NextRequest) {
@@ -66,13 +66,13 @@ export async function POST(request: NextRequest) {
     // Parse the JSON body from the request
     const body = await request.json();
     console.log(body);
-      // Generate images
-      const filesArr = await generateImages(body.prompt, 2);
-      const order = await createOrder(body.walletDest,filesArr);
-      
-      // Return JSON array of URLs
-      console.log('response',responseJson);
-      return NextResponse.json(responseJson);
+    // Generate images
+    const filesArr = await generateImages(body.prompt, 2);
+    const order = await createOrder(body.walletDest, filesArr);
+
+    // Return JSON array of URLs
+    console.log('response', responseJson);
+    return NextResponse.json(responseJson);
   } catch (error) {
     // If there's an error, return a 400 Bad Request response
     return NextResponse.json({ error }, { status: 400 })
@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
 export async function GET() {
   try {
     // Return the response as JSON
-    console.log('response',responseJson);
+    console.log('response', responseJson);
     return NextResponse.json(responseJson)
   } catch (error) {
     // If there's an error, return a 400 Bad Request response
