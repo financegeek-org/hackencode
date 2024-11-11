@@ -33,6 +33,28 @@ const generateImages = async (prompt:string, number=4) => {
   return json;
 }
 
+const createOrder = async (receiveAddress:string, files) => {
+  /*
+  {filename, dataURL}
+  */
+  const files = [];
+  const payload = {
+    receiveAddress,
+    feeRate: 1,
+    outputValue: 546,
+    files,
+    devAddress: '2NFWqZc4J27uM3eAqmtBsyiejWQvCA3JMkW',
+    devFee: 1000,
+  };
+  const response = await fetch('https://open-api-fractal.unisat.io/v2/inscribe/order/create', {
+    method: 'POST',
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload),
+});
+const data = await response.json();  
+}
 
 export async function POST(request: NextRequest) {
   try {
