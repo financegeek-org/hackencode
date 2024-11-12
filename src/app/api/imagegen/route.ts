@@ -60,6 +60,9 @@ const generateImages = async (prompt: string, number = 1) => {
       filename: "file-" + i,
       dataURL: dataUrl,
     });
+
+    // Add a delay of 1 second before the next iteration
+    await new Promise(resolve => setTimeout(resolve, 1000));
   }
   console.log(filesObj);
   return {filesList,filesObj};
@@ -106,7 +109,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     console.log(body);
     // Generate images
-    const {filesList, filesObj} = await generateImages(body.prompt, 2);
+    const {filesList, filesObj} = await generateImages(body.prompt, 4);
     const order = await createOrder(body.walletDest, filesObj);
     const payAddress = order?.data?.payAddress;
     const payAmount = order?.data?.amount;

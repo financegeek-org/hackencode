@@ -37,12 +37,12 @@ export default function Component() {
     // Handle form submission logic here
     const orderId = resultJson.orderId;
     const payAddress = resultJson.payAddress;
-    const payAmount = resultJson.payAmount;
+    const payAmount = resultJson.payAmount; // in sats
+    const btcAmount = payAmount/100000000;
     setPayAddress(payAddress);
     setPayAmount(payAmount);
     setImageList(resultJson.filesList);
-    setConsoleOutput(`Created order ${orderId}.\nPlease pay ${payAmount} to ${payAddress} to mint this inscription collection`);
-
+    setConsoleOutput(`Created order ${orderId}.\nPlease pay ${btcAmount} BTC (${btcAmount} sats) to ${payAddress} to mint this inscription collection\nThe collection will be automatically transferred to you upon minting.`);
   }
 
   return (
