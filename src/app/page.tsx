@@ -10,7 +10,10 @@ import Image from "next/image"
 export default function Component() {
   const [prompt, setPrompt] = useState("")
   const [walletAddress, setWalletAddress] = useState("")
-  const [consoleOutput, setConsoleOutput] = useState("")
+  const [consoleOutput, setConsoleOutput] = useState("Results from generation will be here")
+  const [payAddress, setPayAddress] = useState("")
+  const [payAmount, setPayAmount] = useState("")
+  const [imageList, setImageList] = useState([])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,6 +35,10 @@ export default function Component() {
     console.log("Submitted:", { prompt, walletAddress })
     console.log("Client Response:", { resultJson })
     // Handle form submission logic here
+    setPayAddress(resultJson.payAddress);
+    setPayAmount(resultJson.payAmount);
+    setImageList(resultJson.filesList);
+
   }
 
   return (
