@@ -93,11 +93,11 @@ export default function Component() {
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="relative w-full pt-[100%]">
+          {imageList.map((imageUrl, index) => (
+            <div key={index} className="relative w-full pt-[100%]">
               <Image
-                src={`/placeholder.svg?height=1024&width=1024&text=Image ${i}`}
-                alt={`Generated Image ${i}`}
+                src={imageUrl}
+                alt={`Generated Image ${index + 1}`}
                 layout="fill"
                 objectFit="contain"
                 className="absolute top-0 left-0"
