@@ -41,14 +41,28 @@ const generateImages = async (prompt: string, number = 1) => {
   const filesObj = []; // {filename, dataURL}
   for (let i = 0; i < number; i++) {
     const imageUrl = await generateImage(prompt, i);
+    
+    /*
+    // storee the image
+    const imageResponse = await fetch(imageUrl);
+    const imageBuffer = await imageResponse.arrayBuffer();
+    const base64Image = Buffer.from(imageBuffer).toString('base64');
+    const dataURI = `data:image/png;base64,${base64Image}`;
+    const dataUrl = dataURI;
+    */
+
+    // storee the URL to image
+    const base64 = btoa(unescape(encodeURIComponent(imageUrl)));
+    const dataUrl = `data:text/plain;base64,${base64}`;
+
     filesList.push(imageUrl);
     filesObj.push({
       filename: "file-" + i,
-      dataURL: imageUrl,
+      dataURL: dataUrl,
     });
   }
   console.log(filesObj);
-  return filesObj;
+  return {filesList,filesObj};
 }
 
 const getOrders = async () => {
@@ -61,6 +75,7 @@ const getOrders = async () => {
   });
   const data = await response.json();
   console.log("fractal response", data);
+  return data;
 }
 const createOrder = async (receiveAddress: string, files: []) => {
   const payload = {
@@ -91,13 +106,19 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     console.log(body);
     // Generate images
-    const filesObj = await generateImages(body.prompt, 1);
+    const {filesList, filesObj} = await generateImages(body.prompt, 1);
     const order = await createOrder(body.walletDest, filesObj);
-    const orderSummary=await getOrders();
-    console.log('orderSummary', orderSummary);
+    const payAddress = order?.data?.payAddress;
+    const payAmount = order?.data?.amount;
+    //const orderSummary=await getOrders();
 
     // Return JSON array of URLs
-    return NextResponse.json(orderSummary);
+    const returnObj = {
+      payAddress,
+      payAmount,
+      filesList,
+    }
+    return NextResponse.json(returnObj);
   } catch (error) {
     // If there's an error, return a 400 Bad Request response
     return NextResponse.json({ error }, { status: 400 })
