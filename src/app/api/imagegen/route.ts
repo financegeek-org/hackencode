@@ -17,8 +17,8 @@ const generateImage = async (prompt: string, seed: number) => {
       authorization: 'Bearer ' + process.env.TOGETHER_API_KEY
     },
     body: JSON.stringify({
-      model: 'black-forest-labs/FLUX.1-schnell-Free',
-      //model: 'black-forest-labs/FLUX.1-schnell',
+      //model: 'black-forest-labs/FLUX.1-schnell-Free',
+      model: 'black-forest-labs/FLUX.1-schnell',
       steps: 2,
       n: 1,
       height: 1024,
@@ -106,14 +106,16 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     console.log(body);
     // Generate images
-    const {filesList, filesObj} = await generateImages(body.prompt, 1);
+    const {filesList, filesObj} = await generateImages(body.prompt, 2);
     const order = await createOrder(body.walletDest, filesObj);
     const payAddress = order?.data?.payAddress;
     const payAmount = order?.data?.amount;
+    const orderId = order?.data?.orderId;
     //const orderSummary=await getOrders();
 
     // Return JSON array of URLs
     const returnObj = {
+      orderId,
       payAddress,
       payAmount,
       filesList,

@@ -35,9 +35,13 @@ export default function Component() {
     console.log("Submitted:", { prompt, walletAddress })
     console.log("Client Response:", { resultJson })
     // Handle form submission logic here
-    setPayAddress(resultJson.payAddress);
-    setPayAmount(resultJson.payAmount);
+    const orderId = resultJson.orderId;
+    const payAddress = resultJson.payAddress;
+    const payAmount = resultJson.payAmount;
+    setPayAddress(payAddress);
+    setPayAmount(payAmount);
     setImageList(resultJson.filesList);
+    setConsoleOutput(`Created order ${orderId}.\nPlease pay ${payAmount} to ${payAddress} to mint this inscription collection`);
 
   }
 
