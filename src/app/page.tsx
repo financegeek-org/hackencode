@@ -39,10 +39,11 @@ export default function Component() {
     const payAddress = resultJson.payAddress;
     const payAmount = resultJson.payAmount; // in sats
     const btcAmount = payAmount/100000000;
+    const glitterTrans = resultJson.glitterTrans;
     setPayAddress(payAddress);
     setPayAmount(payAmount);
     setImageList(resultJson.filesList);
-    setConsoleOutput(`Created order ${orderId}.\nPlease pay ${btcAmount} BTC (${btcAmount} sats) to ${payAddress} to mint this inscription collection\nThe collection will be automatically transferred to you upon minting.`);
+    setConsoleOutput(`Created order ${orderId}.\nPlease pay ${btcAmount} BTC (${btcAmount} sats) to ${payAddress} to mint this inscription collection\nThe collection will be automatically transferred to you upon minting.\nGlittr transactions of non fungible assets ${glitterTrans}`);
   }
 
   return (

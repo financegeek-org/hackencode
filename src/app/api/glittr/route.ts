@@ -20,8 +20,8 @@ const glittrCreate = async (filesList) => {
   filesList.forEach(async file => {
     const c = txBuilder.freeMintContractInstantiate({
       simple_asset: {
-        supply_cap: 2000n.toString(),
-        divisibility: 18,
+        supply_cap: 10n.toString(),
+        divisibility: 0,
         live_time: 0,
       },
       amount_per_mint: 2n.toString(),
